@@ -1,4 +1,3 @@
-import { NAVIGATE } from "@/helpers/constants"
 import { HomeNavItem } from "@/types/home/homeTypes"
 import { useNavigate } from 'react-router-dom'
 
@@ -11,7 +10,7 @@ export default function HomeListItem({ navItem }: HomeListItemProps) {
 
   return (
     <li
-      onClick={() => { navigate(NAVIGATE.SELECT_MULTI_TREE_SEARCH) }}
+      onClick={() => { navigate(navItem.url) }}
       className="m-1 mb-2 p-1 bg-gray-300 hover:bg-gray-400 transition shadow rounded cursor-pointer"
     >
       <header className="text-[1.5rem] text-gray-700">{navItem.name}</header>

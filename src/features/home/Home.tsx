@@ -14,7 +14,7 @@ export default function Home() {
     {
       id: 2,
       name: "Tree",
-      url: "/select/tree",
+      url: '/tree',
       desc: "Custom Tree",
     },
   ]
