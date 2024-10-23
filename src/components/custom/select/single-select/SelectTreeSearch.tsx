@@ -1,10 +1,19 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { PiCaretDownLight, PiCaretUpLight } from "react-icons/pi"
 
+export type SelectTreeSearchOption = {
+  value: string;
+  children: SelectTreeSearchOption[];
+};
+
+export type SelectTreeSearchOptions = SelectTreeSearchOption[];
+
+type onChange = (value: SelectTreeSearchOption | null) => void
+
 type SelectTreeSearchProps = {
-  value?: any
-  onChange: (value: any) => void
-  options: any
+  value?: SelectTreeSearchOption | null
+  onChange: onChange
+  options: SelectTreeSearchOptions
   size?: 'SM' | 'MD' | 'LG'
 }
 
@@ -16,7 +25,7 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
 
   const optionsCopy = options
   const searchCopy = search
-  let filteredOptions = optionsCopy?.filter((option: any) => option.value.toLowerCase().includes(searchCopy.toLowerCase()))
+  let filteredOptions = optionsCopy?.filter((option: SelectTreeSearchOption) => option.value.toLowerCase().includes(searchCopy.toLowerCase()))
   if (filteredOptions === undefined) {
     filteredOptions = []
   }
@@ -57,21 +66,35 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
   //   return option === value
   // }
 
-  const handleBlur = (e: any) => {
+  // const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+  //   if (isOpen) {
+  //     if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+  //       setIsOpen(false)
+  //     }
+  //   }
+  // }
+
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
     if (isOpen) {
-      if (!containerRef.current?.contains(e.relatedTarget)) {
-        setIsOpen(false)
+      if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+        setIsOpen(false);
       }
     }
-  }
+  }, [isOpen]);
+
+  const handleClick = useCallback((e: MouseEvent) => {
+    if (isOpen && containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      setIsOpen(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
-    document.addEventListener('click', handleBlur)
+    document.addEventListener('click', handleClick)
 
     return () => {
-      document.removeEventListener('click', handleBlur)
+      document.removeEventListener('click', handleClick)
     }
-  }, [])
+  }, [handleClick])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -121,10 +144,11 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
           break
       }
     }
-    containerRef.current?.addEventListener("keydown", handler)
+    const containerRefCurrent = containerRef.current
+    containerRefCurrent?.addEventListener("keydown", handler)
 
     return () => {
-      containerRef.current?.removeEventListener("keydown", handler)
+      containerRefCurrent?.removeEventListener("keydown", handler)
     }
   }, [isOpen, options])
 
@@ -164,10 +188,10 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
 }
 
 // Recursive TreeNode Component
-function TreeNode({ node, onSelect }: { node: any, onSelect: any }) {
+function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: onChange }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleToggle = (e: any) => {
+  const handleToggle = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     setIsOpen(!isOpen);
   };
@@ -198,7 +222,7 @@ function TreeNode({ node, onSelect }: { node: any, onSelect: any }) {
       {/* Render the children recursively */}
       {isOpen && node.children && (
         <div>
-          {node.children.map((child: any, index: number) => (
+          {node.children.map((child: SelectTreeSearchOption, index: number) => (
             <TreeNode key={index} node={child} onSelect={onSelect} />
           ))}
         </div>
@@ -208,7 +232,7 @@ function TreeNode({ node, onSelect }: { node: any, onSelect: any }) {
 };
 
 // Main Tree Component
-function Tree({ data, onSelect }: { data: any[], onSelect: any }) {
+function Tree({ data, onSelect }: { data: SelectTreeSearchOptions, onSelect: onChange }) {
   return (
     <div onClick={(e) => { e.stopPropagation() }} >
       {data.map((node, index) => (

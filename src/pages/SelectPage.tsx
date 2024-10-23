@@ -10,10 +10,10 @@ export default function SelectPage() {
     url: NAVIGATE.SELECT_MULTI_TREE_SEARCH,
   })
   menuItems.push({
-    id: 1,
-    name: 'Select Tree',
+    id: 2,
+    name: 'Select Tree Search',
     icon: 'LiaUserCogSolid',
-    url: '/select/select-tree',
+    url: NAVIGATE.SELECT_TREE_SEARCH,
   })
 
   return (

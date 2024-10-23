@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import HomePage from "@/pages/HomePage";
 import SelectPage from "@/pages/SelectPage";
 import SelectMultiTreeSearchContainer from "@/features/select/SelectMultiTreeSearchContainer";
+import SelectTreeSearchContainer from "@/features/select/SelectTreeSearchContainer";
 
 const router = createBrowserRouter([
   {
@@ -18,8 +19,8 @@ const router = createBrowserRouter([
         element: <SelectMultiTreeSearchContainer />,
       },
       {
-        path: 'select-tree',
-        element: <div>select tree</div>,
+        path: 'select-tree-search',
+        element: <SelectTreeSearchContainer />,
       },
     ],
   },
