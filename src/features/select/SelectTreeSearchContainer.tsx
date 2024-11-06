@@ -10,6 +10,10 @@ const options: SelectTreeSearchOptions = [
         children: [
           {
             value: 'C1',
+            children: [{ value: 'C11', children: [] }]
+          },
+          {
+            value: 'C2',
             children: []
           },
         ]
@@ -26,7 +30,25 @@ const options: SelectTreeSearchOptions = [
   },
   {
     value: 'GP3',
-    children: []
+    children: [
+      {
+        value: 'P31',
+        children: [
+          {
+            value: 'C31',
+            children: []
+          },
+          {
+            value: 'C32',
+            children: []
+          },
+        ]
+      },
+      {
+        value: 'P32',
+        children: []
+      },
+    ]
   },
 ]
 

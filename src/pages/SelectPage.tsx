@@ -15,6 +15,12 @@ export default function SelectPage() {
     icon: 'LiaUserCogSolid',
     url: NAVIGATE.SELECT_TREE_SEARCH,
   })
+  menuItems.push({
+    id: 3,
+    name: 'Select Multi Check Search',
+    icon: 'LiaUserCogSolid',
+    url: NAVIGATE.SELECT_MULTI_CHECK_SEARCH,
+  })
 
   return (
     <PageContainer menu={menuItems} />

@@ -170,7 +170,7 @@ export default function SelectMultiTreeSearch({ tree, onChange, options, size = 
             e.stopPropagation()
           }}
           key={'SEARCH'}
-          className={`${sizeStyles.textSize} font-light sticky top-0 grid grid-cols-[auto_20px] border-b-[0.05rem] border-solid border-gray-400`}
+          className={`${sizeStyles.textSize} font-light sticky top-0 grid grid-cols-[auto_48px] border-b-[0.05rem] border-solid border-gray-400`}
         >
           <input
             value={search}
@@ -223,7 +223,7 @@ function TreeNode({ options, node, onSelect, sizeStyles }: { options: SelectMult
           className="flex flex-row flex-grow justify-start items-center gap-2 cursor-pointer hover:bg-gray-100"
         >
           <div className={`${getCheckColor(node.selection)} ${sizeStyles.checkBoxSize} border-[0.05rem] border-solid border-gray-600`}></div>
-          <div className='cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]'>
+          <div className={`${sizeStyles.textSize} cursor-pointer flex-grow font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
             {node.value}
           </div>
         </div>

@@ -263,7 +263,7 @@ export default function SelectMultiCheckSearch({ value, onChange, options, close
             e.stopPropagation()
           }}
           key={'SEARCH'}
-          className={`${sizeStyles.textSize} font-light grid grid-cols-[auto_20px]`}
+          className={`${sizeStyles.textSize} font-light sticky top-0 grid grid-cols-[auto_48px]`}
         >
           <input
             value={search}
@@ -272,7 +272,7 @@ export default function SelectMultiCheckSearch({ value, onChange, options, close
             type="text"
             placeholder="Search"
           />
-          <button onClick={() => { setSearch('') }} className={`${sizeStyles.clearBtnTextSize} text-gray-400 border-none outline-none p-0 hover:text-gray-700 focus:text-gray-700`}>&times;</button>
+          <button onClick={() => { setSearch('') }} className={`${sizeStyles.clearBtnTextSize} text-gray-400 border-none outline-none p-0 cursor-pointer bg-white z-[100] hover:text-gray-700 focus:text-gray-700`}>&times;</button>
         </li>
         <li
           onClick={(e) => {

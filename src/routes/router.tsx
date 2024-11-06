@@ -3,6 +3,7 @@ import HomePage from "@/pages/HomePage";
 import SelectPage from "@/pages/SelectPage";
 import SelectMultiTreeSearchContainer from "@/features/select/SelectMultiTreeSearchContainer";
 import SelectTreeSearchContainer from "@/features/select/SelectTreeSearchContainer";
+import SelectMultiCheckSearchContainer from "@/features/select/SelectMultiCheckSearchContainer";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: 'select-tree-search',
         element: <SelectTreeSearchContainer />,
+      },
+      {
+        path: 'select-multi-check-search',
+        element: <SelectMultiCheckSearchContainer />,
       },
     ],
   },

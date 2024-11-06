@@ -170,7 +170,7 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
             e.stopPropagation()
           }}
           key={'SEARCH'}
-          className={`${sizeStyles.textSize} font-light grid grid-cols-[auto_20px] border-b-[0.05rem] border-solid border-gray-400`}
+          className={`${sizeStyles.textSize} font-light sticky top-0 grid grid-cols-[auto_48px] border-b-[0.05rem] border-solid border-gray-400`}
         >
           <input
             value={search}
@@ -213,9 +213,11 @@ function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: 
             e.stopPropagation()
             onSelect(node)
           }}
-          className='cursor-pointer text-[0.6rem] font-light text-gray-500 hover:text-gray-900'
+          className="flex flex-row flex-grow justify-start items-center gap-0 cursor-pointer hover:bg-gray-100"
         >
-          {node.value}
+          <div className='cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]'>
+            {node.value}
+          </div>
         </div>
       </div>
 
