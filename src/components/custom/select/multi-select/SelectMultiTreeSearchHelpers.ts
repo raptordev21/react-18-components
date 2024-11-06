@@ -1,4 +1,26 @@
-import { SelectedValues, SelectMultiTreeSearchOption, SelectMultiTreeSearchOptions } from "./SelectMultiTreeSearchTypes";
+import { SelectedValues, SelectMultiTreeSearchOption, SelectMultiTreeSearchOptionRaw, SelectMultiTreeSearchOptions, SelectMultiTreeSearchOptionsRaw } from "./SelectMultiTreeSearchTypes";
+
+export function addIdAndSelectionKeysToOptions(options: SelectMultiTreeSearchOptionsRaw, id: string) {
+  return options.map((option: SelectMultiTreeSearchOptionRaw, index: number) => {
+    if (id === '') {
+      const newOption: SelectMultiTreeSearchOption = {
+        ...option,
+        id: `${index}`,
+        selection: 'NOT-SELECTED',
+        children: option.children ? addIdAndSelectionKeysToOptions(option.children, `${index}`) : []
+      };
+      return newOption;
+    } else {
+      const newOption: SelectMultiTreeSearchOption = {
+        ...option,
+        id: `${id}-${index}`,
+        selection: 'NOT-SELECTED',
+        children: option.children ? addIdAndSelectionKeysToOptions(option.children, `${id}-${index}`) : []
+      };
+      return newOption;
+    }
+  });
+}
 
 export function getHighestParentsSelected(options: SelectMultiTreeSearchOptions) {
   const selectedItems: SelectedValues[] = [];

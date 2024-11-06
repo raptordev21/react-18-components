@@ -1,74 +1,53 @@
 import { useState } from "react"
 import SelectMultiTreeSearch from "@/components/custom/select/multi-select/SelectMultiTreeSearch"
-import { SelectMultiTreeSearchOptions } from "@/components/custom/select/multi-select/SelectMultiTreeSearchTypes"
+import { SelectMultiTreeSearchOptions, SelectMultiTreeSearchOptionsRaw } from "@/components/custom/select/multi-select/SelectMultiTreeSearchTypes"
+import { addIdAndSelectionKeysToOptions } from "@/components/custom/select/multi-select/SelectMultiTreeSearchHelpers"
 
-const options: SelectMultiTreeSearchOptions = [
+const options: SelectMultiTreeSearchOptionsRaw = [
   {
-    id: '0',
     value: 'GP1',
-    selection: 'CHILD-SELECTED',
     children: [
       {
-        id: '0-0',
         value: 'P1',
-        selection: 'CHILD-SELECTED',
         children: [
           {
-            id: '0-0-0',
             value: 'C1',
-            selection: 'SELECTED',
             children: []
           },
           {
-            id: '0-0-1',
             value: 'C2',
-            selection: 'NOT-SELECTED',
             children: []
           },
         ]
       },
       {
-        id: '0-1',
         value: 'P2',
-        selection: 'NOT-SELECTED',
         children: []
       },
     ]
   },
   {
-    id: '1',
     value: 'GP2',
-    selection: 'NOT-SELECTED',
     children: []
   },
   {
-    id: '2',
     value: 'GP3',
-    selection: 'SELECTED',
     children: [
       {
-        id: '2-0',
         value: 'P31',
-        selection: 'SELECTED',
         children: [
           {
-            id: '2-0-0',
             value: 'C31',
-            selection: 'SELECTED',
             children: []
           },
           {
-            id: '2-0-1',
             value: 'C32',
-            selection: 'SELECTED',
             children: []
           },
         ]
       },
       {
-        id: '2-1',
         value: 'P32',
-        selection: 'SELECTED',
         children: []
       },
     ]
@@ -76,7 +55,7 @@ const options: SelectMultiTreeSearchOptions = [
 ]
 
 export default function SelectMultiTreeSearchContainer() {
-  const [tree, setTree] = useState<SelectMultiTreeSearchOptions>(options)
+  const [tree, setTree] = useState<SelectMultiTreeSearchOptions>(addIdAndSelectionKeysToOptions(options, ''))
 
   return (
     <div className="">
