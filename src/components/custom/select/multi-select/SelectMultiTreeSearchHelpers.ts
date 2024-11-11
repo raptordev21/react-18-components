@@ -142,3 +142,27 @@ export const getCheckColor = (selection: 'SELECTED' | 'NOT-SELECTED' | 'CHILD-SE
     return 'bg-gray-300'
   }
 }
+
+export function searchInHierarchy(data: SelectMultiTreeSearchOption[], searchTerm: string) {
+  const result = []
+
+  function searchNode(node: SelectMultiTreeSearchOption) {
+    if (node.value.toLowerCase().includes(searchTerm.toLowerCase())) return true
+
+    if (node.children) {
+      for (const child of node.children) {
+        if (searchNode(child)) return true
+      }
+    }
+
+    return false
+  }
+
+  for (const node of data) {
+    if (searchNode(node)) {
+      result.push(node)
+    }
+  }
+
+  return result
+}

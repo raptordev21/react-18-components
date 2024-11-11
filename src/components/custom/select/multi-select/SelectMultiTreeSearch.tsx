@@ -6,6 +6,7 @@ import {
   getCheckColor,
   getHighestParentsSelected,
   getSelectionType,
+  searchInHierarchy,
   setSelectionsToKey
 } from "./SelectMultiTreeSearchHelpers"
 
@@ -27,10 +28,7 @@ export default function SelectMultiTreeSearch({ tree, onChange, options, size = 
 
   const optionsCopy = options
   const searchCopy = search
-  let filteredOptions = optionsCopy?.filter((option: SelectMultiTreeSearchOption) => option.value.toLowerCase().includes(searchCopy.toLowerCase()))
-  if (filteredOptions === undefined) {
-    filteredOptions = []
-  }
+  const filteredOptions = searchInHierarchy(optionsCopy, searchCopy)
 
   // SM
   const sizeStyles = {
@@ -187,20 +185,36 @@ export default function SelectMultiTreeSearch({ tree, onChange, options, size = 
         >
           ALL
         </div>
-        <Tree data={filteredOptions} onSelect={onChange} sizeStyles={sizeStyles} />
+        <Tree data={filteredOptions} onSelect={onChange} sizeStyles={sizeStyles} search={search} />
       </div>
     </div>
   )
 }
 
 // Recursive TreeNode Component
-function TreeNode({ options, node, onSelect, sizeStyles }: { options: SelectMultiTreeSearchOptions, node: SelectMultiTreeSearchOption, onSelect: onChange, sizeStyles: Record<string, string> }) {
+function TreeNode({ options, node, onSelect, sizeStyles, search }: { options: SelectMultiTreeSearchOptions, node: SelectMultiTreeSearchOption, onSelect: onChange, sizeStyles: Record<string, string>, search: string }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  let searchHighlight = false
+  if (search.length > 0) {
+    if (node.value.toLowerCase().includes(search.toLowerCase())) {
+      searchHighlight = true
+    }
+  }
 
   const handleToggle = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     setIsOpen(!isOpen);
   }
+
+  useEffect(() => {
+    if (search.length > 0) {
+      setIsOpen(true)
+    } else {
+      setIsOpen(false)
+    }
+
+  }, [search.length])
 
   return (
     <div className='ml-6'>
@@ -220,10 +234,10 @@ function TreeNode({ options, node, onSelect, sizeStyles }: { options: SelectMult
             const newOptions = applySelectionsToTreeById(options, node.id, getSelectionType(node.selection))
             onSelect([...newOptions])
           }}
-          className="flex flex-row flex-grow justify-start items-center gap-2 cursor-pointer hover:bg-gray-100"
+          className={`${searchHighlight ? "bg-gray-100" : ''} flex flex-row flex-grow justify-start items-center gap-2 cursor-pointer hover:bg-gray-100`}
         >
           <div className={`${getCheckColor(node.selection)} ${sizeStyles.checkBoxSize} border-[0.05rem] border-solid border-gray-600`}></div>
-          <div className={`${sizeStyles.textSize} cursor-pointer flex-grow font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
+          <div className={`${sizeStyles.textSize} ${searchHighlight ? 'text-gray-900 font-[500]' : ''} cursor-pointer flex-grow font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
             {node.value}
           </div>
         </div>
@@ -233,7 +247,7 @@ function TreeNode({ options, node, onSelect, sizeStyles }: { options: SelectMult
       {isOpen && node.children && (
         <div>
           {node.children.map((child: SelectMultiTreeSearchOption, index: number) => (
-            <TreeNode key={index} options={options} node={child} onSelect={onSelect} sizeStyles={sizeStyles} />
+            <TreeNode key={index} options={options} node={child} onSelect={onSelect} sizeStyles={sizeStyles} search={search} />
           ))}
         </div>
       )}
@@ -242,11 +256,11 @@ function TreeNode({ options, node, onSelect, sizeStyles }: { options: SelectMult
 };
 
 // Main Tree Component
-function Tree({ data, onSelect, sizeStyles }: { data: SelectMultiTreeSearchOptions, onSelect: onChange, sizeStyles: Record<string, string> }) {
+function Tree({ data, onSelect, sizeStyles, search }: { data: SelectMultiTreeSearchOptions, onSelect: onChange, sizeStyles: Record<string, string>, search: string }) {
   return (
     <div onClick={(e) => { e.stopPropagation() }} >
       {data.map((node, index) => (
-        <TreeNode key={index} options={data} node={node} onSelect={onSelect} sizeStyles={sizeStyles} />
+        <TreeNode key={index} options={data} node={node} onSelect={onSelect} sizeStyles={sizeStyles} search={search} />
       ))}
     </div>
   );

@@ -25,10 +25,7 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
 
   const optionsCopy = options
   const searchCopy = search
-  let filteredOptions = optionsCopy?.filter((option: SelectTreeSearchOption) => option.value.toLowerCase().includes(searchCopy.toLowerCase()))
-  if (filteredOptions === undefined) {
-    filteredOptions = []
-  }
+  const filteredOptions = searchInHierarchy(optionsCopy, searchCopy)
 
   // SM
   const sizeStyles = {
@@ -53,26 +50,34 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
     sizeStyles.checkBoxSize = 'max-h-[11px] max-w-[11px] mx-[4px] my-[5px]'
   }
 
+  function searchInHierarchy(data: SelectTreeSearchOption[], searchTerm: string) {
+    const result = []
+
+    function searchNode(node: SelectTreeSearchOption) {
+      if (node.value.toLowerCase().includes(searchTerm.toLowerCase())) return true
+
+      if (node.children) {
+        for (const child of node.children) {
+          if (searchNode(child)) return true
+        }
+      }
+
+      return false
+    }
+
+    for (const node of data) {
+      if (searchNode(node)) {
+        result.push(node)
+      }
+    }
+
+    return result
+  }
+
   const clearOptions = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation()
     onChange(null)
   }
-
-  // const selectOption = (option: any) => {
-  //   if (option !== value) onChange(option)
-  // }
-
-  // const isOptionSelected = (option: any) => {
-  //   return option === value
-  // }
-
-  // const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-  //   if (isOpen) {
-  //     if (!containerRef.current?.contains(e.relatedTarget as Node)) {
-  //       setIsOpen(false)
-  //     }
-  //   }
-  // }
 
   const handleBlur = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
     if (isOpen) {
@@ -181,20 +186,36 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
           />
           <button onClick={() => { setSearch('') }} className={`${sizeStyles.clearBtnTextSize} text-gray-400 border-none outline-none p-0 hover:text-gray-700 focus:text-gray-700`}>&times;</button>
         </div>
-        <Tree data={filteredOptions} onSelect={onChange} />
+        <Tree data={filteredOptions} onSelect={onChange} search={search} />
       </div>
     </div>
   )
 }
 
 // Recursive TreeNode Component
-function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: onChange }) {
+function TreeNode({ node, onSelect, search }: { node: SelectTreeSearchOption, onSelect: onChange, search: string }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  let searchHighlight = false
+  if (search.length > 0) {
+    if (node.value.toLowerCase().includes(search.toLowerCase())) {
+      searchHighlight = true
+    }
+  }
 
   const handleToggle = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     setIsOpen(!isOpen);
-  };
+  }
+
+  useEffect(() => {
+    if (search.length > 0) {
+      setIsOpen(true)
+    } else {
+      setIsOpen(false)
+    }
+
+  }, [search.length])
 
   return (
     <div className='ml-6'>
@@ -213,9 +234,9 @@ function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: 
             e.stopPropagation()
             onSelect(node)
           }}
-          className="flex flex-row flex-grow justify-start items-center gap-0 cursor-pointer hover:bg-gray-100"
+          className={`${searchHighlight ? "bg-gray-100" : ''} flex flex-row flex-grow justify-start items-center gap-0 cursor-pointer hover:bg-gray-100`}
         >
-          <div className='cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]'>
+          <div className={`${searchHighlight ? 'text-gray-900 font-[500]' : ''} cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
             {node.value}
           </div>
         </div>
@@ -225,7 +246,7 @@ function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: 
       {isOpen && node.children && (
         <div>
           {node.children.map((child: SelectTreeSearchOption, index: number) => (
-            <TreeNode key={index} node={child} onSelect={onSelect} />
+            <TreeNode key={index} node={child} onSelect={onSelect} search={search} />
           ))}
         </div>
       )}
@@ -234,11 +255,11 @@ function TreeNode({ node, onSelect }: { node: SelectTreeSearchOption, onSelect: 
 };
 
 // Main Tree Component
-function Tree({ data, onSelect }: { data: SelectTreeSearchOptions, onSelect: onChange }) {
+function Tree({ data, onSelect, search }: { data: SelectTreeSearchOptions, onSelect: onChange, search: string }) {
   return (
     <div onClick={(e) => { e.stopPropagation() }} >
       {data.map((node, index) => (
-        <TreeNode key={index} node={node} onSelect={onSelect} />
+        <TreeNode key={index} node={node} onSelect={onSelect} search={search} />
       ))}
     </div>
   );
