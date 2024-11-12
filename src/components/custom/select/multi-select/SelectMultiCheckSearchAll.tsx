@@ -33,8 +33,6 @@ export default function SelectMultiCheckSearchAll({
   const dropdownRef = useRef<HTMLUListElement>(null)
   const itemRefs = useRef<HTMLLIElement[]>([])
 
-  // const ALL = { label: 'ALL', value: 'ALL' }
-
   const optionsCopy = options
   const searchCopy = search
   let filteredOptions = optionsCopy?.filter((option: SelectMultiCheckSearchAllOption) => option.label.toLowerCase().includes(searchCopy.toLowerCase()))
@@ -73,11 +71,30 @@ export default function SelectMultiCheckSearchAll({
 
   const selectOption = useCallback((option: SelectMultiCheckSearchAllOption) => {
     if (value.includes(option)) {
-      onChange(value.filter(o => o !== option))
+      if (option.label === 'ALL' && option.value === 'ALL') {
+        onChange([])
+      } else {
+        if (value.length === options.length) {
+          onChange(value.filter(o => o !== option && o.value !== 'ALL'))
+          // setIsAll(true)
+        } else {
+          onChange(value.filter(o => o !== option))
+        }
+      }
     } else {
-      onChange([...value, option])
+      if (option.label === 'ALL' && option.value === 'ALL') {
+        onChange(options)
+        // setIsAll(true)
+      } else {
+        if (value.length === options.length - 2) {
+          onChange(options)
+          // setIsAll(true)
+        } else {
+          onChange([...value, option])
+        }
+      }
     }
-  }, [onChange, value])
+  }, [onChange, value, options])
 
   const isOptionSelected = (option: SelectMultiCheckSearchAllOption) => {
     const itemFound = value?.find(selectedOption => selectedOption.value === option.value)
@@ -149,7 +166,7 @@ export default function SelectMultiCheckSearchAll({
                   onChange(options)
                 }
               } else {
-                selectOption(options[highlightedIndex - 1])
+                selectOption(options[highlightedIndex])
               }
             }
           } else {
@@ -162,7 +179,7 @@ export default function SelectMultiCheckSearchAll({
                   onChange(options)
                 }
               } else {
-                selectOption(options[highlightedIndex - 1])
+                selectOption(options[highlightedIndex])
               }
             }
           }
@@ -301,10 +318,10 @@ export default function SelectMultiCheckSearchAll({
                 setIsOpen(true)
               }
             }}
-            onMouseEnter={() => { setHighlightedIndex(index + 1) }}
+            onMouseEnter={() => { setHighlightedIndex(index) }}
             key={option.value}
             ref={(el: HTMLLIElement) => itemRefs.current[index] = el}
-            className={`${isOptionSelected(option) ? 'bg-gray-200' : ''} ${index + 1 === highlightedIndex ? 'bg-gray-400' : ''} ${sizeStyles.textSize} p-1 cursor-pointer font-light grid grid-cols-[20px_auto]`}
+            className={`${isOptionSelected(option) ? 'bg-gray-200' : ''} ${index === highlightedIndex ? 'bg-gray-400' : ''} ${sizeStyles.textSize} p-1 cursor-pointer font-light grid grid-cols-[20px_auto]`}
           >
             <div className={`${isOptionSelected(option) ? 'bg-gray-700' : 'bg-white'} ${sizeStyles.checkBoxSize} border-[0.05rem] border-solid border-gray-600`}></div>
             <div>{option.label}</div>

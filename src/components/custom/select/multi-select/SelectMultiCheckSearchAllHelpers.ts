@@ -20,3 +20,11 @@ export function addAllAtStartInOptionsArray(options: SelectMultiCheckSearchAllOp
     return newOptions
   }
 }
+
+export function removeAllInOptionsArray(options: SelectMultiCheckSearchAllOption[]) {
+  if (checkIfAllAlreadyPresentInOptions(options)) {
+    return options.filter(option => option.label !== 'ALL' && option.value !== 'ALL')
+  } else {
+    return options
+  }
+}
