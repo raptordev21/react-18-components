@@ -166,3 +166,23 @@ export function searchInHierarchy(data: SelectMultiTreeSearchOption[], searchTer
 
   return result
 }
+
+export function searchAndFilterHierarchy(data: SelectMultiTreeSearchOption[], searchTerm: string) {
+  function filterNode(node: SelectMultiTreeSearchOption) {
+    const isMatch = node.value.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const filteredChildren: SelectMultiTreeSearchOption[] = node.children
+      .map(filterNode)
+      .filter(child => child !== null);
+
+    if (isMatch || filteredChildren.length > 0) {
+      return { ...node, children: filteredChildren };
+    }
+
+    return null;
+  }
+
+  return data
+    .map(filterNode)
+    .filter(node => node !== null);
+}

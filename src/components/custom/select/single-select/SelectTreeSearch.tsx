@@ -25,7 +25,7 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
 
   const optionsCopy = options
   const searchCopy = search
-  const filteredOptions = searchInHierarchy(optionsCopy, searchCopy)
+  const filteredOptions = searchAndFilterHierarchy(optionsCopy, searchCopy)
 
   // SM
   const sizeStyles = {
@@ -50,28 +50,24 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
     sizeStyles.checkBoxSize = 'max-h-[11px] max-w-[11px] mx-[4px] my-[5px]'
   }
 
-  function searchInHierarchy(data: SelectTreeSearchOption[], searchTerm: string) {
-    const result = []
+  function searchAndFilterHierarchy(data: SelectTreeSearchOption[], searchTerm: string) {
+    function filterNode(node: SelectTreeSearchOption) {
+      const isMatch = node.value.toLowerCase().includes(searchTerm.toLowerCase())
 
-    function searchNode(node: SelectTreeSearchOption) {
-      if (node.value.toLowerCase().includes(searchTerm.toLowerCase())) return true
+      const filteredChildren: SelectTreeSearchOption[] = node.children
+        .map(filterNode)
+        .filter(child => child !== null);
 
-      if (node.children) {
-        for (const child of node.children) {
-          if (searchNode(child)) return true
-        }
+      if (isMatch || filteredChildren.length > 0) {
+        return { ...node, children: filteredChildren };
       }
 
-      return false
+      return null;
     }
 
-    for (const node of data) {
-      if (searchNode(node)) {
-        result.push(node)
-      }
-    }
-
-    return result
+    return data
+      .map(filterNode)
+      .filter(node => node !== null);
   }
 
   const clearOptions = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -196,13 +192,6 @@ export default function SelectTreeSearch({ value, onChange, options, size = 'SM'
 function TreeNode({ node, onSelect, search }: { node: SelectTreeSearchOption, onSelect: onChange, search: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  let searchHighlight = false
-  if (search.length > 0) {
-    if (node.value.toLowerCase().includes(search.toLowerCase())) {
-      searchHighlight = true
-    }
-  }
-
   const handleToggle = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     setIsOpen(!isOpen);
@@ -234,9 +223,9 @@ function TreeNode({ node, onSelect, search }: { node: SelectTreeSearchOption, on
             e.stopPropagation()
             onSelect(node)
           }}
-          className={`${searchHighlight ? "bg-gray-100" : ''} flex flex-row flex-grow justify-start items-center gap-0 cursor-pointer hover:bg-gray-100`}
+          className={`flex flex-row flex-grow justify-start items-center gap-0 cursor-pointer hover:bg-gray-100`}
         >
-          <div className={`${searchHighlight ? 'text-gray-900 font-[500]' : ''} cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
+          <div className={`cursor-pointer flex-grow text-[0.6rem] font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
             {node.value}
           </div>
         </div>

@@ -6,7 +6,8 @@ import {
   getCheckColor,
   getHighestParentsSelected,
   getSelectionType,
-  searchInHierarchy,
+  searchAndFilterHierarchy,
+  // searchInHierarchy,
   setSelectionsToKey
 } from "./SelectMultiTreeSearchHelpers"
 
@@ -28,7 +29,7 @@ export default function SelectMultiTreeSearch({ tree, onChange, options, size = 
 
   const optionsCopy = options
   const searchCopy = search
-  const filteredOptions = searchInHierarchy(optionsCopy, searchCopy)
+  const filteredOptions = searchAndFilterHierarchy(optionsCopy, searchCopy)
 
   // SM
   const sizeStyles = {
@@ -195,13 +196,6 @@ export default function SelectMultiTreeSearch({ tree, onChange, options, size = 
 function TreeNode({ options, node, onSelect, sizeStyles, search }: { options: SelectMultiTreeSearchOptions, node: SelectMultiTreeSearchOption, onSelect: onChange, sizeStyles: Record<string, string>, search: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  let searchHighlight = false
-  if (search.length > 0) {
-    if (node.value.toLowerCase().includes(search.toLowerCase())) {
-      searchHighlight = true
-    }
-  }
-
   const handleToggle = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     setIsOpen(!isOpen);
@@ -234,10 +228,10 @@ function TreeNode({ options, node, onSelect, sizeStyles, search }: { options: Se
             const newOptions = applySelectionsToTreeById(options, node.id, getSelectionType(node.selection))
             onSelect([...newOptions])
           }}
-          className={`${searchHighlight ? "bg-gray-100" : ''} flex flex-row flex-grow justify-start items-center gap-2 cursor-pointer hover:bg-gray-100`}
+          className={`flex flex-row flex-grow justify-start items-center gap-2 cursor-pointer hover:bg-gray-100`}
         >
           <div className={`${getCheckColor(node.selection)} ${sizeStyles.checkBoxSize} border-[0.05rem] border-solid border-gray-600`}></div>
-          <div className={`${sizeStyles.textSize} ${searchHighlight ? 'text-gray-900 font-[500]' : ''} cursor-pointer flex-grow font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
+          <div className={`${sizeStyles.textSize} cursor-pointer flex-grow font-light text-gray-500 hover:text-gray-900 hover:font-[500]`}>
             {node.value}
           </div>
         </div>
